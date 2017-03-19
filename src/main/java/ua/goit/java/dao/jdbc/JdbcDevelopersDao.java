@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Created by bulov on 03.03.2017.
  */
+
 public class JdbcDevelopersDao implements DevelopersDao {
 
     private DataSource dataSource;
@@ -49,6 +50,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
 
     @Override
     public void deleteDeveloper(int developerId) {
+        deleteSkillsFromDeveloper(developerId);
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM developers WHERE developer_id = ?")){
@@ -137,7 +139,6 @@ public class JdbcDevelopersDao implements DevelopersDao {
         List<Skill> skillList = skillsDao.getAllSkills();
         int id = developer.getDeveloperId();
 
-
         for (Skill skill : skillList) {
             for (String skillName : skills) {
                 if (skillName.equals(skill.getSkillName())) {
@@ -158,17 +159,19 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     private void updateSkillsFromDeveloper(Developer developer){
-        int id = developer.getDeveloperId();
+        deleteSkillsFromDeveloper(developer.getDeveloperId());
+        addSkillsToDeveloper(developer);
+    }
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection
-                     .prepareStatement("DELETE FROM developer_skill WHERE developer_id = ?")) {
-            statement.setInt(1, id);
+    private void deleteSkillsFromDeveloper(int developerId){
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("DELETE FROM developer_skill WHERE developer_id = ?")){
+            statement.setInt(1, developerId);
             statement.execute();
-            LOGGER.info("From table Developer_skill was delete skills of developer id: " + id);
-            addSkillsToDeveloper(developer);
-        } catch (SQLException e) {
-            LOGGER.error("Something wrong with deleting skill in developer_skill");
+            LOGGER.error("From table Developer_skill was delete skills of developer id: " + developerId);
+        }catch (SQLException e){
+            LOGGER.error("Something wrong with deleting skill from developer_skill");
         }
     }
 
