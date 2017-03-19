@@ -1,20 +1,26 @@
 package ua.goit.java.console.table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
 import ua.goit.java.dao.DevelopersDao;
-import ua.goit.java.dao.jdbc.JdbcDevelopersDao;
+import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.entity.Developer;
 
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by bulov on 07.03.2017.
  */
-public class DevelopersConsole extends TableConsole{
+public class DevelopersConsole extends TableConsole {
 
+    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
-    private DevelopersDao developersDao = new JdbcDevelopersDao();
+    private DevelopersDao developersDao;
+    private SkillsDao skillsDao;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DevelopersConsole.class);
+
 
     @Override
     public void runConsole() {
@@ -27,17 +33,17 @@ public class DevelopersConsole extends TableConsole{
         System.out.println("Press 9 - RETURN TO START MENU");
         System.out.println("Press 0 - EXIT");
         System.out.print("Your choice > ");
-        try{
+        try {
             int choice = scanner.nextInt();
             checkChoice(this, choice);
-        } catch (InputMismatchException e){
+        } catch (InputMismatchException e) {
             System.out.print("\n!!! INPUT NOT CORRECT !!!\n");
             new DevelopersConsole().runConsole();
         }
     }
 
     @Override
-    public void add(){
+    public void add() {
         Developer developer = new Developer();
         System.out.print("Insert developer name: ");
         developer.setName(scanner.next());
@@ -45,39 +51,59 @@ public class DevelopersConsole extends TableConsole{
         developer.setSurname(scanner.next());
         System.out.println("\nInsert developer salary: ");
         developer.setSalary(scanner.nextInt());
+        System.out.println("You can chose from this skills:");
+        skillsDao.getAllSkills().forEach(System.out::println);
+        System.out.println("\nInsert developer skills (PLEASE USE / TO SEPARATE): ");
+        developer.setSkills(Arrays.asList(scanner.next().split("/")));
         developersDao.addDeveloper(developer);
     }
 
     @Override
-    public void delete(){
-        System.out.println("Insert developer id: ");
+    public void delete() {
+        System.out.print("Insert developer id: ");
         developersDao.deleteDeveloper(scanner.nextInt());
     }
 
     @Override
-    public void update(){
-        System.out.println("Insert id of developer that you want update: ");
+    public void update() {
+        System.out.print("Insert id of developer that you want update: ");
         Developer developer = developersDao.getDeveloperById(scanner.nextInt());
         System.out.println("You chose: " + developer.toString());
-        System.out.println("Insert new name for developer: ");
+        System.out.print("Insert new name for developer: ");
         developer.setName(scanner.next());
-        System.out.print("\nInsert new developer surname: ");
+        System.out.print("Insert new developer surname: ");
         developer.setSurname(scanner.next());
-        System.out.println("\nInsert new developer salary: ");
+        System.out.print("Insert new developer salary: ");
         developer.setSalary(scanner.nextInt());
+        System.out.print("You can chose from this skills:");
+        skillsDao.getAllSkills().forEach(System.out::println);
+        System.out.print("Insert developer skills (PLEASE USE / TO SEPARATE): ");
+        developer.setSkills(Arrays.asList(scanner.next().split("/")));
         developersDao.updateDeveloper(developer);
     }
 
     @Override
-    public void getAll(){
+    public void getAll() {
         List<Developer> customers;
         customers = developersDao.getAllDevelopers();
         customers.forEach(System.out::println);
     }
 
     @Override
-    public void getById(){
+    public void getById() {
         System.out.println("Insert id of company: ");
         System.out.println(developersDao.getDeveloperById(scanner.nextInt()));
+    }
+
+    public void setTxManager(PlatformTransactionManager txManager) {
+        this.txManager = txManager;
+    }
+
+    public void setDevelopersDao(DevelopersDao developersDao) {
+        this.developersDao = developersDao;
+    }
+
+    public void setSkillsDao(SkillsDao skillsDao) {
+        this.skillsDao = skillsDao;
     }
 }

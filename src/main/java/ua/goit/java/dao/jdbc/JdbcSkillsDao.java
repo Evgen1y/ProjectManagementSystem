@@ -2,14 +2,14 @@ package ua.goit.java.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ua.goit.java.entity.ConnectionFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import ua.goit.java.console.table.SkillsConsole;
 import ua.goit.java.entity.Skill;
 import ua.goit.java.dao.SkillsDao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +18,17 @@ import java.util.List;
  */
 public class JdbcSkillsDao implements SkillsDao {
 
+    private DataSource dataSource;
+    private SkillsConsole skillsConsole;
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcSkillsDao.class);
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void addSkill(Skill skill) {
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
-                    .prepareStatement("INSERT INTO skills VALUES (?, ?)");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("INSERT INTO skills VALUES (?, ?)")){
             statement.setInt(1, skill.getSkillId());
             statement.setString(2, skill.getSkillName());
             statement.execute();
@@ -36,10 +39,11 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteSkill(int skillId) {
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
-                    .prepareStatement("DELETE FROM skills WHERE skill_id = ?");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                .prepareStatement("DELETE FROM skills WHERE skill_id = ?")){
             statement.setInt(1, skillId);
             statement.execute();
             LOGGER.info("From table Skills was deleting skill with id = " + skillId);
@@ -49,10 +53,11 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateSkill(Skill skill) {
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
-                    .prepareStatement("UPDATE skills SET skill_name = ? WHERE skill_id = ?");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("UPDATE skills SET skill_name = ? WHERE skill_id = ?")){
             statement.setString(1, skill.getSkillName());
             statement.setInt(2, skill.getSkillId());
             statement.execute();
@@ -64,10 +69,11 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<Skill> getAllSkills() {
         List<Skill> skills = new ArrayList<>();
-        try{
-            Statement statement = new ConnectionFactory().getConnection().createStatement();
+        try(Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement()){
             ResultSet resultSet = statement.executeQuery("SELECT * FROM skills");
             while(resultSet.next()) {
                 skills.add(createSkill(resultSet));
@@ -80,12 +86,14 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Skill getSkillById(int skillId) {
         Skill skill = new Skill();
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
+
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
                     .prepareStatement("SELECT skill_id, skill_name FROM skills " +
-                            "WHERE skill_id = ?");
+                            "WHERE skill_id = ?")){
             statement.setInt(1, skillId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -96,6 +104,12 @@ public class JdbcSkillsDao implements SkillsDao {
         } catch(SQLException e){
             LOGGER.error("Something wrong with getting skill from skills with id = " + skillId);
         }
+
+        if(skill.equals(new Skill())){
+            System.out.println("Skill with this id doesn't exist.\nPlease, try again");
+            skillsConsole.question(skillsConsole);
+        }
+
         return skill;
     }
 
@@ -106,4 +120,11 @@ public class JdbcSkillsDao implements SkillsDao {
         return skill;
     }
 
+    public void setSkillsConsole(SkillsConsole skillsConsole) {
+        this.skillsConsole = skillsConsole;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 }

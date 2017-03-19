@@ -1,5 +1,6 @@
 package ua.goit.java.console.table;
 
+import org.springframework.transaction.PlatformTransactionManager;
 import ua.goit.java.console.Console;
 import ua.goit.java.dao.CustomersDao;
 import ua.goit.java.dao.jdbc.JdbcCustomersDao;
@@ -14,8 +15,9 @@ import java.util.Scanner;
  */
 public class CustomersConsole extends TableConsole{
 
+    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
-    private CustomersDao customersDao = new JdbcCustomersDao();
+    private CustomersDao customersDao;
 
     @Override
     public void runConsole() {
@@ -26,7 +28,7 @@ public class CustomersConsole extends TableConsole{
         System.out.println("Press 4 - GET ALL CUSTOMERS");
         System.out.println("Press 5 - GET CUSTOMER BY ID");
         System.out.println("Press 9 - RETURN TO START MENU");
-        System.out.println("Press 0 - EXIT");
+        System.out.println("Press 0 - EXIT\n");
         System.out.print("Your choice > ");
         try{
             int choice = scanner.nextInt();
@@ -48,16 +50,16 @@ public class CustomersConsole extends TableConsole{
 
     @Override
     public void delete(){
-        System.out.println("Insert customer id: ");
+        System.out.print("Insert customer id: ");
         customersDao.deleteCustomer(scanner.nextInt());
     }
 
     @Override
     public void update(){
-        System.out.println("Insert id of customer that you want update: ");
+        System.out.print("Insert id of customer that you want update: ");
         Customer customer = customersDao.getCustomerById(scanner.nextInt());
         System.out.println("You chose: " + customer.toString());
-        System.out.println("Insert new name for customer: ");
+        System.out.print("Insert new name for customer: ");
         customer.setCustomerName(scanner.next());
         customersDao.updateCustomer(customer);
     }
@@ -71,7 +73,15 @@ public class CustomersConsole extends TableConsole{
 
     @Override
     public void getById(){
-        System.out.println("Insert id of company: ");
+        System.out.print("Insert id of company: ");
         System.out.println(customersDao.getCustomerById(scanner.nextInt()));
+    }
+
+    public void setTxManager(PlatformTransactionManager txManager) {
+        this.txManager = txManager;
+    }
+
+    public void setCustomersDao(CustomersDao customersDao) {
+        this.customersDao = customersDao;
     }
 }

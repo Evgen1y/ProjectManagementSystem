@@ -10,6 +10,8 @@ import java.util.Scanner;
  */
 public abstract class TableConsole {
 
+    private Console console;
+
     Scanner scanner = new Scanner(System.in);
 
     abstract void add();
@@ -41,7 +43,7 @@ public abstract class TableConsole {
             case 5: getById();
                 question(t);
                 break;
-            case 9: new Console();
+            case 9: console.runConsole();
                 break;
             case 0: exit(t);
             default:
@@ -50,10 +52,10 @@ public abstract class TableConsole {
         }
     }
 
-    private void question(TableConsole t){
+    public void question(TableConsole t){
         System.out.println("S - back to START MENU\nT - back to TABLE\nE - EXIT");
         switch(scanner.next().toLowerCase().charAt(0)){
-            case 's': new Console();
+            case 's': console.runConsole();
                 break;
             case 't': t.runConsole();
                 break;
@@ -78,5 +80,9 @@ public abstract class TableConsole {
                 System.out.println("\n!!! chose Y or N !!!\n");
                 exit(t);
         }
+    }
+
+    public void setConsole(Console console) {
+        this.console = console;
     }
 }

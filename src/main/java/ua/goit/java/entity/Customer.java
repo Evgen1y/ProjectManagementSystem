@@ -31,4 +31,22 @@ public class Customer {
                 ", customerName='" + customerName + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Customer customer = (Customer) o;
+
+        if (getCustomerId() != customer.getCustomerId()) return false;
+        return getCustomerName() != null ? getCustomerName().equals(customer.getCustomerName()) : customer.getCustomerName() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getCustomerId();
+        result = 31 * result + (getCustomerName() != null ? getCustomerName().hashCode() : 0);
+        return result;
+    }
 }

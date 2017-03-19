@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+
+    <bean id="main" class="ua.goit.java.Main">
+        <property name="console" ref="console"/>
+    </bean>
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver.class}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.user}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="minPoolSize" value="${jdbc.min.connection}"/>
+        <property name="maxPoolSize" value="${jdbc.max.connection}"/>
+        <property name="acquireIncrement" value="${jdbc.acquire.increment}"/>
+    </bean>
+
+    <bean id="console" class="ua.goit.java.console.Console">
+        <property name="txManager" ref="txManager"/>
+        <property name="companiesConsole" ref="companiesConsole"/>
+        <property name="customersConsole" ref="customersConsole"/>
+        <property name="developersConsole" ref="developersConsole"/>
+        <property name="projectsConsole" ref="projectsConsole"/>
+        <property name="skillsConsole" ref="skillsConsole"/>
+    </bean>
+
+
+    <bean id="companiesDao" class="ua.goit.java.dao.jdbc.JdbcCompaniesDao">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="companiesConsole" ref="companiesConsole"/>
+    </bean>
+    <bean id="customersDao" class="ua.goit.java.dao.jdbc.JdbcCustomersDao">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="customersConsole" ref="customersConsole"/>
+    </bean>
+    <bean id="developersDao" class="ua.goit.java.dao.jdbc.JdbcDevelopersDao">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="skillsDao" ref="skillsDao"/>
+        <property name="developersConsole" ref="developersConsole"/>
+    </bean>
+    <bean id="projectsDao" class="ua.goit.java.dao.jdbc.JdbcProjectsDao">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="projectsConsole" ref="projectsConsole"/>
+    </bean>
+    <bean id="skillsDao" class="ua.goit.java.dao.jdbc.JdbcSkillsDao">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="skillsConsole" ref="skillsConsole"/>
+    </bean>
+
+    <bean id="tableConsole" class="ua.goit.java.console.table.TableConsole" abstract="true">
+        <property name="console" ref="console"/>
+    </bean>
+
+    <bean id="companiesConsole" class="ua.goit.java.console.table.CompaniesConsole" parent="tableConsole">
+        <property name="companiesDao" ref="companiesDao"/>
+        <property name="txManager" ref="txManager"/>
+    </bean>
+    <bean id="customersConsole" class="ua.goit.java.console.table.CustomersConsole" parent="tableConsole">
+        <property name="customersDao" ref="customersDao"/>
+        <property name="txManager" ref="txManager"/>
+    </bean>
+    <bean id="developersConsole" class= "ua.goit.java.console.table.DevelopersConsole" parent="tableConsole">
+        <property name="developersDao" ref="developersDao"/>
+        <property name="skillsDao" ref="skillsDao"/>
+        <property name="txManager" ref="txManager"/>
+    </bean>
+    <bean id="projectsConsole" class="ua.goit.java.console.table.ProjectsConsole" parent="tableConsole">
+        <property name="companiesDao" ref="companiesDao"/>
+        <property name="customersDao" ref="customersDao"/>
+        <property name="developersDao" ref="developersDao"/>
+        <property name="projectsDao" ref="projectsDao"/>
+        <property name="txManager" ref="txManager"/>
+    </bean>
+    <bean id="skillsConsole" class="ua.goit.java.console.table.SkillsConsole" parent="tableConsole">
+        <property name="skillsDao" ref="skillsDao"/>
+        <property name="txManager" ref="txManager"/>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:jdbc.properties"/>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+</beans>

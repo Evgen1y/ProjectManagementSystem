@@ -1,5 +1,6 @@
 package ua.goit.java.console.table;
 
+import org.springframework.transaction.PlatformTransactionManager;
 import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.dao.jdbc.JdbcSkillsDao;
 import ua.goit.java.entity.Skill;
@@ -13,8 +14,9 @@ import java.util.Scanner;
  */
 public class SkillsConsole extends TableConsole{
 
+    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
-    private SkillsDao skillsDao = new JdbcSkillsDao();
+    private SkillsDao skillsDao;
 
     @Override
     public void runConsole() {
@@ -46,16 +48,16 @@ public class SkillsConsole extends TableConsole{
 
     @Override
     public void delete(){
-        System.out.println("Insert skill id: ");
+        System.out.print("Insert skill id: ");
         skillsDao.deleteSkill(scanner.nextInt());
     }
 
     @Override
     public void update(){
-        System.out.println("Insert id of skill that you want update: ");
+        System.out.print("Insert id of skill that you want update: ");
         Skill skill = skillsDao.getSkillById(scanner.nextInt());
         System.out.println("You chose: " + skill.toString());
-        System.out.println("Insert new name for skill: ");
+        System.out.print("Insert new name for skill: ");
         skill.setSkillName(scanner.next());
         skillsDao.updateSkill(skill);
     }
@@ -69,7 +71,15 @@ public class SkillsConsole extends TableConsole{
 
     @Override
     public void getById(){
-        System.out.println("Insert id of skill: ");
-        System.out.println(skillsDao.getSkillById(scanner.nextInt()));    }
+        System.out.print("Insert id of skill: ");
+        System.out.println(skillsDao.getSkillById(scanner.nextInt()));
+    }
 
+    public void setTxManager(PlatformTransactionManager txManager) {
+        this.txManager = txManager;
+    }
+
+    public void setSkillsDao(SkillsDao skillsDao) {
+        this.skillsDao = skillsDao;
+    }
 }

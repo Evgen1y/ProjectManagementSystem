@@ -2,14 +2,12 @@ package ua.goit.java.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ua.goit.java.entity.ConnectionFactory;
+import ua.goit.java.console.table.CustomersConsole;
 import ua.goit.java.entity.Customer;
 import ua.goit.java.dao.CustomersDao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +16,15 @@ import java.util.List;
  */
 public class JdbcCustomersDao implements CustomersDao {
 
+    private DataSource dataSource;
+    private CustomersConsole customersConsole;
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
     public void addCustomer(Customer customer) {
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
-                    .prepareStatement("INSERT INTO customers VALUES (?, ?)");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("INSERT INTO customers VALUES (?, ?)")){
             statement.setInt(1, customer.getCustomerId());
             statement.setString(2, customer.getCustomerName());
             statement.execute();
@@ -37,9 +37,9 @@ public class JdbcCustomersDao implements CustomersDao {
 
     @Override
     public void deleteCustomer(int customerId) {
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
-                    .prepareStatement("DELETE FROM customers WHERE customer_id = ?");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("DELETE FROM customers WHERE customer_id = ?")){
             statement.setInt(1, customerId);
             statement.execute();
             LOGGER.info("From table Customers was deleting customer with id = " + customerId);
@@ -51,9 +51,9 @@ public class JdbcCustomersDao implements CustomersDao {
 
     @Override
     public void updateCustomer(Customer customer) {
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
-                    .prepareStatement("UPDATE customers SET customer_name = ? WHERE customer_id = ?");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("UPDATE customers SET customer_name = ? WHERE customer_id = ?")){
             statement.setString(1, customer.getCustomerName());
             statement.setInt(2, customer.getCustomerId());
             statement.execute();
@@ -67,8 +67,9 @@ public class JdbcCustomersDao implements CustomersDao {
     @Override
     public List<Customer> getAllCustomers() {
         List<Customer> customers = new ArrayList<>();
-        try{
-            Statement statement = new ConnectionFactory().getConnection().createStatement();
+        try(Connection connection = dataSource.getConnection();
+            Statement statement = connection
+                    .createStatement()){
             ResultSet resultSet = statement.executeQuery("SELECT * FROM customers");
             while(resultSet.next()) {
                 customers.add(createCustomer(resultSet));
@@ -84,10 +85,10 @@ public class JdbcCustomersDao implements CustomersDao {
     @Override
     public Customer getCustomerById(int customerId) {
         Customer customer = new Customer();
-        try{
-            PreparedStatement statement = new ConnectionFactory().getConnection()
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
                     .prepareStatement("SELECT customer_id, customer_name FROM customers " +
-                            "WHERE customer_id = ?");
+                            "WHERE customer_id = ?")){
             statement.setInt(1, customerId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -98,6 +99,12 @@ public class JdbcCustomersDao implements CustomersDao {
         } catch(SQLException e){
             LOGGER.error("Something wrong with getting customer from customers with id = " + customerId);
         }
+
+        if(customer.equals(new Customer())){
+            System.out.println("Customer with this id doesn't exist.\nPlease, try again");
+            customersConsole.question(customersConsole);
+        }
+
         return customer;
     }
 
@@ -106,5 +113,13 @@ public class JdbcCustomersDao implements CustomersDao {
         customer.setCustomerId(resultSet.getInt("customer_id"));
         customer.setCustomerName(resultSet.getString("customer_name"));
         return customer;
+    }
+
+    public void setCustomersConsole(CustomersConsole customersConsole) {
+        this.customersConsole = customersConsole;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 }

@@ -31,4 +31,22 @@ public class Skill {
                 ", skillName='" + skillName + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Skill skill = (Skill) o;
+
+        if (getSkillId() != skill.getSkillId()) return false;
+        return getSkillName() != null ? getSkillName().equals(skill.getSkillName()) : skill.getSkillName() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getSkillId();
+        result = 31 * result + (getSkillName() != null ? getSkillName().hashCode() : 0);
+        return result;
+    }
 }
