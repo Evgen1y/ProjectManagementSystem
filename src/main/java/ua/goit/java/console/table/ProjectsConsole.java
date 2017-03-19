@@ -1,6 +1,8 @@
 package ua.goit.java.console.table;
 
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.CompaniesDao;
 import ua.goit.java.dao.CustomersDao;
 import ua.goit.java.dao.DevelopersDao;
@@ -51,6 +53,7 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void add(){
         Project project = new Project();
         System.out.print("Insert project name: ");
@@ -79,12 +82,14 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(){
         System.out.print("Insert project id: ");
         projectsDao.deleteProject(scanner.nextInt());
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of project that you want update: ");
         Project project = projectsDao.getProjectById(scanner.nextInt());
@@ -102,6 +107,7 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Project> projects;
         projects = projectsDao.getAllProjects();
@@ -109,6 +115,7 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of project: ");
         System.out.println(projectsDao.getProjectById(scanner.nextInt()));

@@ -1,6 +1,8 @@
 package ua.goit.java.console.table;
 
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.dao.jdbc.JdbcSkillsDao;
 import ua.goit.java.entity.Skill;
@@ -53,6 +55,7 @@ public class SkillsConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of skill that you want update: ");
         Skill skill = skillsDao.getSkillById(scanner.nextInt());
@@ -63,6 +66,7 @@ public class SkillsConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Skill> skills;
         skills = skillsDao.getAllSkills();
@@ -70,6 +74,7 @@ public class SkillsConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of skill: ");
         System.out.println(skillsDao.getSkillById(scanner.nextInt()));

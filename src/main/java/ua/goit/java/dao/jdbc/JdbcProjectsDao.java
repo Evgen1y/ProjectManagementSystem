@@ -2,6 +2,8 @@ package ua.goit.java.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.console.table.ProjectsConsole;
 import ua.goit.java.entity.Project;
 import ua.goit.java.dao.ProjectsDao;
@@ -21,6 +23,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void addProject(Project project) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -44,6 +47,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteProject(int projectId) {
         deleteDevelopersFromProject(projectId);
         try(Connection connection = dataSource.getConnection();
@@ -59,6 +63,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateProject(Project project) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -78,6 +83,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<Project> getAllProjects() {
         List<Project> projects = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -94,6 +100,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Project getProjectById(int projectId) {
         Project project = new Project();
         try(Connection connection = dataSource.getConnection();
@@ -132,6 +139,7 @@ public class JdbcProjectsDao implements ProjectsDao {
         return project;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private void addDevelopersToProject(Project project){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -147,11 +155,13 @@ public class JdbcProjectsDao implements ProjectsDao {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private void updateDeveloperInProjects(Project project){
         deleteDevelopersFromProject(project.getProjectId());
         addDevelopersToProject(project);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private void deleteDevelopersFromProject(int projectId){
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection

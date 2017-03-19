@@ -1,6 +1,8 @@
 package ua.goit.java.console.table;
 
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.console.Console;
 import ua.goit.java.dao.CustomersDao;
 import ua.goit.java.dao.jdbc.JdbcCustomersDao;
@@ -20,6 +22,7 @@ public class CustomersConsole extends TableConsole{
     private CustomersDao customersDao;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void runConsole() {
         System.out.println("Please chose what you want to do:");
         System.out.println("Press 1 - ADD CUSTOMER");
@@ -41,6 +44,7 @@ public class CustomersConsole extends TableConsole{
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void add(){
         Customer customer = new Customer();
         System.out.print("Insert customer name: ");
@@ -49,12 +53,14 @@ public class CustomersConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(){
         System.out.print("Insert customer id: ");
         customersDao.deleteCustomer(scanner.nextInt());
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of customer that you want update: ");
         Customer customer = customersDao.getCustomerById(scanner.nextInt());
@@ -65,6 +71,7 @@ public class CustomersConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Customer> customers;
         customers = customersDao.getAllCustomers();
@@ -72,6 +79,7 @@ public class CustomersConsole extends TableConsole{
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of company: ");
         System.out.println(customersDao.getCustomerById(scanner.nextInt()));

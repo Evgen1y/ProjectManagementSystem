@@ -2,6 +2,8 @@ package ua.goit.java.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.console.table.CustomersConsole;
 import ua.goit.java.entity.Customer;
 import ua.goit.java.dao.CustomersDao;
@@ -21,6 +23,7 @@ public class JdbcCustomersDao implements CustomersDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void addCustomer(Customer customer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -36,6 +39,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteCustomer(int customerId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -50,6 +54,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateCustomer(Customer customer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -65,6 +70,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<Customer> getAllCustomers() {
         List<Customer> customers = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -83,6 +89,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Customer getCustomerById(int customerId) {
         Customer customer = new Customer();
         try(Connection connection = dataSource.getConnection();

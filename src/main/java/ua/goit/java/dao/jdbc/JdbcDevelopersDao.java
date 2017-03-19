@@ -2,6 +2,8 @@ package ua.goit.java.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.console.table.DevelopersConsole;
 import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.entity.Developer;
@@ -25,6 +27,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     private DevelopersConsole developersConsole;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void addDeveloper(Developer developer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -49,6 +52,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void deleteDeveloper(int developerId) {
         deleteSkillsFromDeveloper(developerId);
         try(Connection connection = dataSource.getConnection();
@@ -63,6 +67,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateDeveloper(Developer developer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -81,6 +86,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<Developer> getAllDevelopers() {
         List<Developer> developers = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -97,6 +103,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
         return developers;    }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Developer getDeveloperById(int developerId) {
         Developer developer = new Developer();
 
@@ -134,6 +141,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
         return developer;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private void addSkillsToDeveloper(Developer developer) {
         List<String> skills = developer.getSkills();
         List<Skill> skillList = skillsDao.getAllSkills();
@@ -158,11 +166,13 @@ public class JdbcDevelopersDao implements DevelopersDao {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private void updateSkillsFromDeveloper(Developer developer){
         deleteSkillsFromDeveloper(developer.getDeveloperId());
         addSkillsToDeveloper(developer);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     private void deleteSkillsFromDeveloper(int developerId){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection

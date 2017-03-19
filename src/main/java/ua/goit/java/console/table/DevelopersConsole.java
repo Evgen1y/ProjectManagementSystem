@@ -3,6 +3,8 @@ package ua.goit.java.console.table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.DevelopersDao;
 import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.entity.Developer;
@@ -43,6 +45,7 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void add() {
         Developer developer = new Developer();
         System.out.print("Insert developer name: ");
@@ -59,12 +62,14 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void delete() {
         System.out.print("Insert developer id: ");
         developersDao.deleteDeveloper(scanner.nextInt());
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void update() {
         System.out.print("Insert id of developer that you want update: ");
         Developer developer = developersDao.getDeveloperById(scanner.nextInt());
@@ -83,6 +88,7 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll() {
         List<Developer> customers;
         customers = developersDao.getAllDevelopers();
@@ -90,6 +96,7 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void getById() {
         System.out.println("Insert id of company: ");
         System.out.println(developersDao.getDeveloperById(scanner.nextInt()));
