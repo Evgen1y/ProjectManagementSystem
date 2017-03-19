@@ -45,6 +45,7 @@ public class JdbcProjectsDao implements ProjectsDao {
 
     @Override
     public void deleteProject(int projectId) {
+        deleteDevelopersFromProject(projectId);
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM projects WHERE project_id = ?")){
@@ -147,15 +148,17 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     private void updateDeveloperInProjects(Project project){
-        int id = project.getProjectId();
+        deleteDevelopersFromProject(project.getProjectId());
+        addDevelopersToProject(project);
+    }
 
+    private void deleteDevelopersFromProject(int projectId){
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement("DELETE FROM developer_project WHERE project_id = ?")) {
-            statement.setInt(1, id);
+            statement.setInt(1, projectId);
             statement.execute();
-            LOGGER.info("From table Developer_project was delete developers of project id: " + id);
-            addDevelopersToProject(project);
+            LOGGER.info("From table Developer_project was delete developers of project id: " + projectId);
         } catch (SQLException e) {
             LOGGER.error("Something wrong with deleting skill in developer_skill");
         }
