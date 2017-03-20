@@ -28,7 +28,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addDeveloper(Developer developer) {
+    public void addDeveloper(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO developers VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)){
@@ -44,7 +44,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
             }else{
                 System.out.println("We can't get developer id!!!");
             }
-            addSkillsToDeveloper(developer);
+            addSkillsToDeveloper(developer, skills);
             LOGGER.info("In table Companies was added " + developer);
         } catch(SQLException e){
             LOGGER.error("Something wrong with add developer in developers");
@@ -55,6 +55,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     @Transactional(propagation = Propagation.REQUIRED)
     public void deleteDeveloper(int developerId) {
         deleteSkillsFromDeveloper(developerId);
+        deleteDeveloperFromProject(developerId);
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM developers WHERE developer_id = ?")){
@@ -68,7 +69,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateDeveloper(Developer developer) {
+    public void updateDeveloper(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE developers SET name = ?, salary = ?, surname = ? WHERE developer_id = ?")){
@@ -77,7 +78,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
             statement.setString(3, developer.getSurname());
             statement.setInt(4, developer.getDeveloperId());
             statement.execute();
-            updateSkillsFromDeveloper(developer);
+            updateSkillsFromDeveloper(developer, skills);
             LOGGER.info("In table Developers was updating developer with id = " + developer.getDeveloperId());
         } catch(SQLException e){
             LOGGER.error("Something wrong with updating developer in developers");
@@ -114,10 +115,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
             statement.setInt(1, developerId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
-                developer.setDeveloperId(resultSet.getInt("developer_id"));
-                developer.setName(resultSet.getString("name"));
-                developer.setSalary(resultSet.getInt("salary"));
-                developer.setSurname(resultSet.getString("surname"));
+                developer = createDeveloper(resultSet);
                 LOGGER.info("Developer with id = " + developerId + " is received");
             }
         } catch(SQLException e){
@@ -138,26 +136,25 @@ public class JdbcDevelopersDao implements DevelopersDao {
         developer.setName(resultSet.getString("name"));
         developer.setSalary(resultSet.getInt("salary"));
         developer.setSurname(resultSet.getString("surname"));
+        findDeveloperSkills(developer);
         return developer;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    private void addSkillsToDeveloper(Developer developer) {
-        List<String> skills = developer.getSkills();
-        List<Skill> skillList = skillsDao.getAllSkills();
+    private void addSkillsToDeveloper(Developer developer,List<String> skills) {
         int id = developer.getDeveloperId();
-
-        for (Skill skill : skillList) {
-            for (String skillName : skills) {
-                if (skillName.equals(skill.getSkillName())) {
+        for (String skill : skills) {
+            for (Skill skill1 : skillsDao.getAllSkills()) {
+                if (skill1.getSkillName().equals(skill)) {
+                    developer.addSkill(skill1);
                     try (Connection connection = dataSource.getConnection();
                          PreparedStatement statement = connection
                                  .prepareStatement("INSERT INTO developer_skill VALUES (?, ?)")) {
                         statement.setInt(1, id);
-                        statement.setInt(2, skill.getSkillId());
+                        statement.setInt(2, skill1.getSkillId());
                         statement.execute();
                         LOGGER.info("In table Developer_skill was add developer id: " + id
-                                + ", developer skill id: " + skill.getSkillId());
+                                + ", developer skill id: " + skill1.getSkillId());
                     } catch (SQLException e) {
                         LOGGER.error("Something wrong with add skill in developer_skill");
                     }
@@ -167,9 +164,9 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    private void updateSkillsFromDeveloper(Developer developer){
+    private void updateSkillsFromDeveloper(Developer developer, List<String> skills){
         deleteSkillsFromDeveloper(developer.getDeveloperId());
-        addSkillsToDeveloper(developer);
+        addSkillsToDeveloper(developer,skills);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -181,7 +178,41 @@ public class JdbcDevelopersDao implements DevelopersDao {
             statement.execute();
             LOGGER.error("From table Developer_skill was delete skills of developer id: " + developerId);
         }catch (SQLException e){
-            LOGGER.error("Something wrong with deleting skill from developer_skill");
+            LOGGER.error("Something wrong with deleting skill from developer");
+        }
+    }
+
+    private void deleteDeveloperFromProject(int developerId){
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("DELETE FROM developer_project WHERE developer_id = ?")){
+            statement.setInt(1, developerId);
+            statement.execute();
+            LOGGER.info("From developer_project was deleting developer with id: " + developerId);
+        }catch (SQLException e){
+            LOGGER.error("Something wrong with deleting developer from project");
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    private void findDeveloperSkills(Developer developer){
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT s.skill_id, s.skill_name FROM skills s " +
+                            "INNER JOIN developer_skill d ON s.skill_id = d.skill_id " +
+                            "WHERE developer_id = ?")){
+            statement.setInt(1, developer.getDeveloperId());
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                Skill skill = new Skill();
+                skill.setSkillId(resultSet.getInt("skill_id"));
+                skill.setSkillName(resultSet.getString("skill_name"));
+                developer.addSkill(skill);
+                LOGGER.info("Add skill: " + skill.getSkillName() + ", to developer, id: " + developer.getDeveloperId());
+            }
+
+        } catch (SQLException e){
+            LOGGER.error("Something wrong with finding developer skills");
         }
     }
 

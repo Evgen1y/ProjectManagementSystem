@@ -58,8 +58,8 @@ public class DevelopersConsole extends TableConsole {
         System.out.println("You can chose from this skills:");
         skillsDao.getAllSkills().forEach(System.out::println);
         System.out.print("Your choice > ");
-        developer.setSkills(Arrays.asList(scanner.next().split("/")));
-        developersDao.addDeveloper(developer);
+        List<String> skills = (Arrays.asList(scanner.next().split("/")));
+        developersDao.addDeveloper(developer, skills);
     }
 
     @Override
@@ -85,8 +85,8 @@ public class DevelopersConsole extends TableConsole {
         System.out.println("You can chose from this skills:");
         skillsDao.getAllSkills().forEach(System.out::println);
         System.out.print("Your choice > ");
-        developer.setSkills(Arrays.asList(scanner.next().split("/")));
-        developersDao.updateDeveloper(developer);
+        List<String> skills = (Arrays.asList(scanner.next().split("/")));
+        developersDao.updateDeveloper(developer, skills);
     }
 
     @Override

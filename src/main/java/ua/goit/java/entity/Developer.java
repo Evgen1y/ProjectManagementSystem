@@ -1,5 +1,6 @@
 package ua.goit.java.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,11 @@ public class Developer {
     private String name;
     private String surname;
     private int salary;
-    private List<String> skills;
+    private List<Skill> skills = new ArrayList<>();
+
+    public void addSkill(Skill skill){
+        skills.add(skill);
+    }
 
     public int getDeveloperId() {
         return developerId;
@@ -45,11 +50,11 @@ public class Developer {
         this.salary = salary;
     }
 
-    public List<String> getSkills() {
+    public List<Skill> getSkills() {
         return skills;
     }
 
-    public void setSkills(List<String> skills) {
+    public void setSkills(List<Skill> skills) {
         this.skills = skills;
     }
 

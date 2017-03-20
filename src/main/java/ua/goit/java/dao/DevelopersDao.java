@@ -9,11 +9,11 @@ import java.util.List;
  */
 public interface DevelopersDao {
 
-    void addDeveloper (Developer developer);
+    void addDeveloper (Developer developer, List<String> skills);
 
     void deleteDeveloper (int developerId);
 
-    void updateDeveloper (Developer developer);
+    void updateDeveloper (Developer developer, List<String> skills);
 
     List<Developer> getAllDevelopers();
 
