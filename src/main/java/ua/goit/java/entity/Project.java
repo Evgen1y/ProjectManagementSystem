@@ -1,5 +1,6 @@
 package ua.goit.java.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,11 @@ public class Project {
     private int companyId;
     private int customerId;
     private int cost;
-    private List<Integer> developersId;
+    private List<Developer> developers = new ArrayList<>();
+
+    public void addDeveloper(Developer developer){
+        developers.add(developer);
+    }
 
     public int getProjectId() {
         return projectId;
@@ -54,12 +59,12 @@ public class Project {
         this.cost = cost;
     }
 
-    public List<Integer> getDevelopersId() {
-        return developersId;
+    public List<Developer> getDevelopers() {
+        return developers;
     }
 
-    public void setDevelopersId(List<Integer> developersId) {
-        this.developersId = developersId;
+    public void setDevelopers(List<Developer> developers) {
+        this.developers = developers;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class Project {
                 ", companyId=" + companyId +
                 ", customerId=" + customerId +
                 ", cost=" + cost +
-                ", developersId=" + developersId +
+                ", developers=" + developers +
                 '}';
     }
 
@@ -87,7 +92,7 @@ public class Project {
         if (getCost() != project.getCost()) return false;
         if (getProjectName() != null ? !getProjectName().equals(project.getProjectName()) : project.getProjectName() != null)
             return false;
-        return getDevelopersId() != null ? getDevelopersId().equals(project.getDevelopersId()) : project.getDevelopersId() == null;
+        return getDevelopers() != null ? getDevelopers().equals(project.getDevelopers()) : project.getDevelopers() == null;
     }
 
     @Override
@@ -97,7 +102,7 @@ public class Project {
         result = 31 * result + getCompanyId();
         result = 31 * result + getCustomerId();
         result = 31 * result + getCost();
-        result = 31 * result + (getDevelopersId() != null ? getDevelopersId().hashCode() : 0);
+        result = 31 * result + (getDevelopers() != null ? getDevelopers().hashCode() : 0);
         return result;
     }
 }

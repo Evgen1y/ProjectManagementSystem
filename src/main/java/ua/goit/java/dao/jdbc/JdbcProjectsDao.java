@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.console.table.ProjectsConsole;
+import ua.goit.java.dao.DevelopersDao;
+import ua.goit.java.entity.Developer;
 import ua.goit.java.entity.Project;
 import ua.goit.java.dao.ProjectsDao;
 
@@ -20,11 +22,12 @@ public class JdbcProjectsDao implements ProjectsDao {
 
     private DataSource dataSource;
     private ProjectsConsole projectsConsole;
+    private DevelopersDao developersDao;
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addProject(Project project) {
+    public void addProject(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO projects VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)){
@@ -39,7 +42,7 @@ public class JdbcProjectsDao implements ProjectsDao {
                 project.setProjectId(resultSet.getInt(1));
                 System.out.println(project.getProjectId());
             }
-            addDevelopersToProject(project);
+            addDevelopersToProject(project, developersId);
             LOGGER.info("In table Projects was added " + project);
         } catch(SQLException e){
             LOGGER.error("Something wrong with add project in projects");
@@ -64,7 +67,7 @@ public class JdbcProjectsDao implements ProjectsDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateProject(Project project) {
+    public void updateProject(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE projects SET project_name = ?, company_id = ?, customer_id = ?, cost = ? WHERE project_id = ?")){
@@ -74,7 +77,7 @@ public class JdbcProjectsDao implements ProjectsDao {
             statement.setInt(4, project.getCost());
             statement.setInt(5, project.getCompanyId());
             statement.execute();
-            updateDeveloperInProjects(project);
+            updateDeveloperInProjects(project, developersId);
             LOGGER.info("In table Projects was updating company with id = " + project.getProjectId());
         } catch(SQLException e){
             LOGGER.error("Something wrong with updating company in companies");
@@ -136,19 +139,25 @@ public class JdbcProjectsDao implements ProjectsDao {
         project.setCompanyId(resultSet.getInt("company_id"));
         project.setCustomerId(resultSet.getInt("customer_id"));
         project.setCost(resultSet.getInt("cost"));
+        findDevelopersInProject(project);
         return project;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    private void addDevelopersToProject(Project project){
+    private void addDevelopersToProject(Project project, List<Integer> developersId){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                 .prepareStatement("INSERT INTO developer_project VALUE (?, ?)")){
-            for(int id :project.getDevelopersId()){
-                statement.setInt(1, id);
-                statement.setInt(2, project.getProjectId());
-                statement.execute();
-                LOGGER.info("Add developer with id: " + id + " to project: " + project.getProjectName());
+            for(int developerId: developersId) {
+                for (Developer developer : developersDao.getAllDevelopers()) {
+                    if (developerId == developer.getDeveloperId()) {
+                        project.addDeveloper(developer);
+                        statement.setInt(1, developer.getDeveloperId());
+                        statement.setInt(2, project.getProjectId());
+                        statement.execute();
+                        LOGGER.info("Add developer with id: " + developer.getDeveloperId() + " to project: " + project.getProjectName());
+                    }
+                }
             }
         }catch (SQLException e){
             LOGGER.error("Something going wrong when add developer to project");
@@ -156,9 +165,9 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    private void updateDeveloperInProjects(Project project){
+    private void updateDeveloperInProjects(Project project, List<Integer> developersId){
         deleteDevelopersFromProject(project.getProjectId());
-        addDevelopersToProject(project);
+        addDevelopersToProject(project, developersId);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -174,6 +183,22 @@ public class JdbcProjectsDao implements ProjectsDao {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    private void findDevelopersInProject(Project project){
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT developer_id FROM developer_project " +
+                            "WHERE project_id = ?")){
+            statement.setInt(1, project.getProjectId());
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                project.addDeveloper(developersDao.getDeveloperById(resultSet.getInt("developer_id")));
+            }
+        } catch (SQLException e){
+                LOGGER.error("Something wrong with getting developers in project");
+        }
+    }
+
     public void setProjectsConsole(ProjectsConsole projectsConsole) {
         this.projectsConsole = projectsConsole;
     }
@@ -182,4 +207,7 @@ public class JdbcProjectsDao implements ProjectsDao {
         this.dataSource = dataSource;
     }
 
+    public void setDevelopersDao(DevelopersDao developersDao) {
+        this.developersDao = developersDao;
+    }
 }

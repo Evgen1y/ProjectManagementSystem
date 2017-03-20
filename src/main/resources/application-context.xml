@@ -45,6 +45,7 @@
     <bean id="projectsDao" class="ua.goit.java.dao.jdbc.JdbcProjectsDao">
         <property name="dataSource" ref="dataSource"/>
         <property name="projectsConsole" ref="projectsConsole"/>
+        <property name="developersDao" ref="developersDao"/>
     </bean>
     <bean id="skillsDao" class="ua.goit.java.dao.jdbc.JdbcSkillsDao">
         <property name="dataSource" ref="dataSource"/>

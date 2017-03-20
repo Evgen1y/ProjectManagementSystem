@@ -9,11 +9,11 @@ import java.util.List;
  */
 public interface ProjectsDao {
 
-    void addProject (Project project);
+    void addProject (Project project, List<Integer> developersId);
 
     void deleteProject (int projectId);
 
-    void updateProject (Project project);
+    void updateProject (Project project, List<Integer> developersId);
 
     List<Project> getAllProjects();
 

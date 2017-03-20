@@ -7,16 +7,9 @@ import ua.goit.java.dao.CompaniesDao;
 import ua.goit.java.dao.CustomersDao;
 import ua.goit.java.dao.DevelopersDao;
 import ua.goit.java.dao.ProjectsDao;
-import ua.goit.java.dao.jdbc.JdbcCompaniesDao;
-import ua.goit.java.dao.jdbc.JdbcCustomersDao;
-import ua.goit.java.dao.jdbc.JdbcDevelopersDao;
-import ua.goit.java.dao.jdbc.JdbcProjectsDao;
-import ua.goit.java.entity.Company;
-import ua.goit.java.entity.Developer;
 import ua.goit.java.entity.Project;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by bulov on 07.03.2017.
@@ -76,9 +69,7 @@ public class ProjectsConsole extends TableConsole{
         System.out.print("Your choice > ");
         List<Integer> developersId = new ArrayList<>();
         Arrays.stream(scanner.next().split("/")).mapToInt(Integer::parseInt).forEach(developersId::add);
-        project.setDevelopersId(developersId);
-        System.out.println(developersId);
-        projectsDao.addProject(project);
+        projectsDao.addProject(project, developersId);
     }
 
     @Override
@@ -102,8 +93,7 @@ public class ProjectsConsole extends TableConsole{
         System.out.print("Your choice > ");
         List<Integer> developersId = new ArrayList<>();
         Arrays.stream(scanner.next().split("/")).mapToInt(Integer::parseInt).forEach(developersId::add);
-        project.setDevelopersId(developersId);
-        projectsDao.updateProject(project);
+        projectsDao.updateProject(project, developersId);
     }
 
     @Override
