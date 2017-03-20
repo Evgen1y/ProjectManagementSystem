@@ -50,13 +50,14 @@ public class DevelopersConsole extends TableConsole {
         Developer developer = new Developer();
         System.out.print("Insert developer name: ");
         developer.setName(scanner.next());
-        System.out.print("\nInsert developer surname: ");
+        System.out.print("Insert developer surname: ");
         developer.setSurname(scanner.next());
-        System.out.println("\nInsert developer salary: ");
+        System.out.print("Insert developer salary: ");
         developer.setSalary(scanner.nextInt());
+        System.out.println("Insert developer skills (PLEASE USE / TO SEPARATE): ");
         System.out.println("You can chose from this skills:");
         skillsDao.getAllSkills().forEach(System.out::println);
-        System.out.println("\nInsert developer skills (PLEASE USE / TO SEPARATE): ");
+        System.out.print("Your choice > ");
         developer.setSkills(Arrays.asList(scanner.next().split("/")));
         developersDao.addDeveloper(developer);
     }
@@ -80,9 +81,10 @@ public class DevelopersConsole extends TableConsole {
         developer.setSurname(scanner.next());
         System.out.print("Insert new developer salary: ");
         developer.setSalary(scanner.nextInt());
-        System.out.print("You can chose from this skills:");
+        System.out.println("Insert developer skills (PLEASE USE / TO SEPARATE): ");
+        System.out.println("You can chose from this skills:");
         skillsDao.getAllSkills().forEach(System.out::println);
-        System.out.print("Insert developer skills (PLEASE USE / TO SEPARATE): ");
+        System.out.print("Your choice > ");
         developer.setSkills(Arrays.asList(scanner.next().split("/")));
         developersDao.updateDeveloper(developer);
     }
