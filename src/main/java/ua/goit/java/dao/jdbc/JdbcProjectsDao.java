@@ -27,7 +27,7 @@ public class JdbcProjectsDao implements ProjectsDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addProject(Project project, List<Integer> developersId) {
+    public void save(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO projects VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)){
@@ -43,15 +43,15 @@ public class JdbcProjectsDao implements ProjectsDao {
                 System.out.println(project.getProjectId());
             }
             addDevelopersToProject(project, developersId);
-            LOGGER.info("In table Projects was added " + project);
+            LOGGER.info("In table Projects was saved " + project);
         } catch(SQLException e){
-            LOGGER.error("Something wrong with add project in projects");
+            LOGGER.error("Something wrong with saving project in projects");
         }
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteProject(int projectId) {
+    public void delete(int projectId) {
         deleteDevelopersFromProject(projectId);
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -67,7 +67,7 @@ public class JdbcProjectsDao implements ProjectsDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateProject(Project project, List<Integer> developersId) {
+    public void update(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE projects SET project_name = ?, company_id = ?, customer_id = ?, cost = ? WHERE project_id = ?")){
@@ -87,7 +87,7 @@ public class JdbcProjectsDao implements ProjectsDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<Project> getAllProjects() {
+    public List<Project> getAll() {
         List<Project> projects = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()){
@@ -104,7 +104,7 @@ public class JdbcProjectsDao implements ProjectsDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public Project getProjectById(int projectId) {
+    public Project getById(int projectId) {
         Project project = new Project();
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -149,7 +149,7 @@ public class JdbcProjectsDao implements ProjectsDao {
             PreparedStatement statement = connection
                 .prepareStatement("INSERT INTO developer_project VALUE (?, ?)")){
             for(int developerId: developersId) {
-                for (Developer developer : developersDao.getAllDevelopers()) {
+                for (Developer developer : developersDao.getAll()) {
                     if (developerId == developer.getDeveloperId()) {
                         project.addDeveloper(developer);
                         statement.setInt(1, developer.getDeveloperId());
@@ -192,7 +192,7 @@ public class JdbcProjectsDao implements ProjectsDao {
             statement.setInt(1, project.getProjectId());
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()){
-                project.addDeveloper(developersDao.getDeveloperById(resultSet.getInt("developer_id")));
+                project.addDeveloper(developersDao.getById(resultSet.getInt("developer_id")));
             }
         } catch (SQLException e){
                 LOGGER.error("Something wrong with getting developers in project");

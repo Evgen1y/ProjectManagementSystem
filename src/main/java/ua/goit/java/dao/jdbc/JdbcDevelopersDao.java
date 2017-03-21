@@ -28,7 +28,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addDeveloper(Developer developer, List<String> skills) {
+    public void save(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO developers VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)){
@@ -45,15 +45,15 @@ public class JdbcDevelopersDao implements DevelopersDao {
                 System.out.println("We can't get developer id!!!");
             }
             addSkillsToDeveloper(developer, skills);
-            LOGGER.info("In table Companies was added " + developer);
+            LOGGER.info("In table Companies was saved " + developer);
         } catch(SQLException e){
-            LOGGER.error("Something wrong with add developer in developers");
+            LOGGER.error("Something wrong with saving developer in developers");
         }
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteDeveloper(int developerId) {
+    public void delete(int developerId) {
         deleteSkillsFromDeveloper(developerId);
         deleteDeveloperFromProject(developerId);
         try(Connection connection = dataSource.getConnection();
@@ -69,7 +69,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateDeveloper(Developer developer, List<String> skills) {
+    public void update(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE developers SET name = ?, salary = ?, surname = ? WHERE developer_id = ?")){
@@ -88,7 +88,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<Developer> getAllDevelopers() {
+    public List<Developer> getAll() {
         List<Developer> developers = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
             Statement statement = connection
@@ -105,7 +105,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public Developer getDeveloperById(int developerId) {
+    public Developer getById(int developerId) {
         Developer developer = new Developer();
 
         try(Connection connection = dataSource.getConnection();
@@ -144,7 +144,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     private void addSkillsToDeveloper(Developer developer,List<String> skills) {
         int id = developer.getDeveloperId();
         for (String skill : skills) {
-            for (Skill skill1 : skillsDao.getAllSkills()) {
+            for (Skill skill1 : skillsDao.getAll()) {
                 if (skill1.getSkillName().equals(skill)) {
                     developer.addSkill(skill1);
                     try (Connection connection = dataSource.getConnection();

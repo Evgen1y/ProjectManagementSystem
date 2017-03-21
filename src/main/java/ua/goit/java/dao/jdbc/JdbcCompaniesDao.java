@@ -23,22 +23,22 @@ public class JdbcCompaniesDao implements CompaniesDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addCompany(Company company) {
+    public void save(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO companies VALUES (?, ?)")){
             statement.setInt(1, company.getCompanyId());
             statement.setString(2, company.getCompanyName());
             statement.execute();
-            LOGGER.info("In table Companies was added " + company);
+            LOGGER.info("In table Companies was saved " + company);
         } catch(SQLException e){
-            LOGGER.error("Something wrong with add company in companies");
+            LOGGER.error("Something wrong with saving company in companies");
         }
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void deleteCompany(int companyId) {
+    public void delete(int companyId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM companies WHERE company_id = ?")){
@@ -52,7 +52,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateCompany(Company company) {
+    public void update(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE companies SET company_name = ? WHERE company_id = ?")){
@@ -67,7 +67,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<Company> getAllCompanies() {
+    public List<Company> getAll() {
         List<Company> companies = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
             Statement statement = connection
@@ -85,7 +85,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Company getCompanyById(int companyId) {
+    public Company getById(int companyId) {
         Company company = new Company();
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection

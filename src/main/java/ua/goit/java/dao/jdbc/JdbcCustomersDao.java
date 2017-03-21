@@ -24,23 +24,23 @@ public class JdbcCustomersDao implements CustomersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addCustomer(Customer customer) {
+    public void save(Customer customer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO customers VALUES (?, ?)")){
             statement.setInt(1, customer.getCustomerId());
             statement.setString(2, customer.getCustomerName());
             statement.execute();
-            LOGGER.info("In table Customers was added " + customer);
+            LOGGER.info("In table Customers was saved " + customer);
         } catch(SQLException e){
-            LOGGER.error("Something wrong with add customer in customers");
+            LOGGER.error("Something wrong with saving customer in customers");
         }
 
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteCustomer(int customerId) {
+    public void delete(int customerId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM customers WHERE customer_id = ?")){
@@ -55,7 +55,7 @@ public class JdbcCustomersDao implements CustomersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateCustomer(Customer customer) {
+    public void update(Customer customer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE customers SET customer_name = ? WHERE customer_id = ?")){
@@ -71,7 +71,7 @@ public class JdbcCustomersDao implements CustomersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<Customer> getAllCustomers() {
+    public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
             Statement statement = connection
@@ -90,7 +90,7 @@ public class JdbcCustomersDao implements CustomersDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public Customer getCustomerById(int customerId) {
+    public Customer getById(int customerId) {
         Customer customer = new Customer();
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection

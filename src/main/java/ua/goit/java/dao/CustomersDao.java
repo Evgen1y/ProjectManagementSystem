@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface CustomersDao {
 
-    void addCustomer (Customer customer);
+    void save(Customer customer);
 
-    void deleteCustomer (int customerId);
+    void delete(int customerId);
 
-    void updateCustomer (Customer customer);
+    void update(Customer customer);
 
-    List<Customer> getAllCustomers();
+    List<Customer> getAll();
 
-    Customer getCustomerById (int customerId);
+    Customer getById(int customerId);
 }

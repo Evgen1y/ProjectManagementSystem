@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface SkillsDao {
 
-    void addSkill (Skill skill);
+    void save(Skill skill);
 
-    void deleteSkill (int skillId);
+    void delete(int skillId);
 
-    void updateSkill (Skill skill);
+    void update(Skill skill);
 
-    List<Skill> getAllSkills();
+    List<Skill> getAll();
 
-    Skill getSkillById (int skillId);
+    Skill getById(int skillId);
 }

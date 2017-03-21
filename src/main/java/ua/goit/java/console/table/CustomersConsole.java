@@ -3,9 +3,7 @@ package ua.goit.java.console.table;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ua.goit.java.console.Console;
 import ua.goit.java.dao.CustomersDao;
-import ua.goit.java.dao.jdbc.JdbcCustomersDao;
 import ua.goit.java.entity.Customer;
 
 import java.util.InputMismatchException;
@@ -49,32 +47,32 @@ public class CustomersConsole extends TableConsole{
         Customer customer = new Customer();
         System.out.print("Insert customer name: ");
         customer.setCustomerName(scanner.next());
-        customersDao.addCustomer(customer);
+        customersDao.save(customer);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(){
         System.out.print("Insert customer id: ");
-        customersDao.deleteCustomer(scanner.nextInt());
+        customersDao.delete(scanner.nextInt());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of customer that you want update: ");
-        Customer customer = customersDao.getCustomerById(scanner.nextInt());
+        Customer customer = customersDao.getById(scanner.nextInt());
         System.out.println("You chose: " + customer.toString());
         System.out.print("Insert new name for customer: ");
         customer.setCustomerName(scanner.next());
-        customersDao.updateCustomer(customer);
+        customersDao.update(customer);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Customer> customers;
-        customers = customersDao.getAllCustomers();
+        customers = customersDao.getAll();
         customers.forEach(System.out::println);
     }
 
@@ -82,7 +80,7 @@ public class CustomersConsole extends TableConsole{
     @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of company: ");
-        System.out.println(customersDao.getCustomerById(scanner.nextInt()));
+        System.out.println(customersDao.getById(scanner.nextInt()));
     }
 
     public void setTxManager(PlatformTransactionManager txManager) {

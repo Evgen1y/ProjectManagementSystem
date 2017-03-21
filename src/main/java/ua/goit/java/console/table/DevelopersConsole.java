@@ -56,24 +56,24 @@ public class DevelopersConsole extends TableConsole {
         developer.setSalary(scanner.nextInt());
         System.out.println("Insert developer skills (PLEASE USE / TO SEPARATE): ");
         System.out.println("You can chose from this skills:");
-        skillsDao.getAllSkills().forEach(System.out::println);
+        skillsDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         List<String> skills = (Arrays.asList(scanner.next().split("/")));
-        developersDao.addDeveloper(developer, skills);
+        developersDao.save(developer, skills);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete() {
         System.out.print("Insert developer id: ");
-        developersDao.deleteDeveloper(scanner.nextInt());
+        developersDao.delete(scanner.nextInt());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void update() {
         System.out.print("Insert id of developer that you want update: ");
-        Developer developer = developersDao.getDeveloperById(scanner.nextInt());
+        Developer developer = developersDao.getById(scanner.nextInt());
         System.out.println("You chose: " + developer.toString());
         System.out.print("Insert new name for developer: ");
         developer.setName(scanner.next());
@@ -83,17 +83,17 @@ public class DevelopersConsole extends TableConsole {
         developer.setSalary(scanner.nextInt());
         System.out.println("Insert developer skills (PLEASE USE / TO SEPARATE): ");
         System.out.println("You can chose from this skills:");
-        skillsDao.getAllSkills().forEach(System.out::println);
+        skillsDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         List<String> skills = (Arrays.asList(scanner.next().split("/")));
-        developersDao.updateDeveloper(developer, skills);
+        developersDao.update(developer, skills);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void getAll() {
         List<Developer> customers;
-        customers = developersDao.getAllDevelopers();
+        customers = developersDao.getAll();
         customers.forEach(System.out::println);
     }
 
@@ -101,7 +101,7 @@ public class DevelopersConsole extends TableConsole {
     @Transactional(propagation = Propagation.REQUIRED)
     public void getById() {
         System.out.println("Insert id of company: ");
-        System.out.println(developersDao.getDeveloperById(scanner.nextInt()));
+        System.out.println(developersDao.getById(scanner.nextInt()));
     }
 
     public void setTxManager(PlatformTransactionManager txManager) {
