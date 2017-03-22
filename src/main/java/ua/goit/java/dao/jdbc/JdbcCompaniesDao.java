@@ -22,6 +22,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void save(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -36,6 +37,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void delete(int companyId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -49,6 +51,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void update(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -63,6 +66,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public List<Company> getAll() {
         List<Company> companies = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -80,6 +84,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public Company getById(int companyId) {
         Company company = new Company();
         try(Connection connection = dataSource.getConnection();
@@ -89,8 +94,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
             statement.setInt(1, companyId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
-                company.setCompanyName(resultSet.getString("company_name"));
-                company.setCompanyId(resultSet.getInt("company_id"));
+                company = createCompany(resultSet);
                 LOGGER.info("Company with id = " + companyId + " is received");
             }
         } catch(SQLException e){

@@ -23,6 +23,7 @@ public class JdbcCustomersDao implements CustomersDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void save(Customer customer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -38,6 +39,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void delete(int customerId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -52,6 +54,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void update(Customer customer) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -67,6 +70,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -85,6 +89,7 @@ public class JdbcCustomersDao implements CustomersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public Customer getById(int customerId) {
         Customer customer = new Customer();
         try(Connection connection = dataSource.getConnection();
@@ -94,8 +99,7 @@ public class JdbcCustomersDao implements CustomersDao {
             statement.setInt(1, customerId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
-                customer.setCustomerName(resultSet.getString("customer_name"));
-                customer.setCustomerId(resultSet.getInt("customer_id"));
+                customer = createCustomer(resultSet);
                 LOGGER.info("Customer with id = " + customerId + " is received");
             }
         } catch(SQLException e){

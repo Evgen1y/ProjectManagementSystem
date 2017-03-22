@@ -27,6 +27,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     private DevelopersConsole developersConsole;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void save(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -51,13 +52,14 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void delete(int developerId) {
-        deleteSkillsFromDeveloper(developerId);
-        deleteDeveloperFromProject(developerId);
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM developers WHERE developer_id = ?")){
             statement.setInt(1, developerId);
+            deleteSkillsFromDeveloper(developerId);
+            deleteDeveloperFromProject(developerId);
             statement.execute();
             LOGGER.info("From table Developers was deleting developer with id = " + developerId);
         } catch(SQLException e){
@@ -66,6 +68,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public void update(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -84,6 +87,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public List<Developer> getAll() {
         List<Developer> developers = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -100,6 +104,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
         return developers;    }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public Developer getById(int developerId) {
         Developer developer = new Developer();
 
@@ -135,7 +140,8 @@ public class JdbcDevelopersDao implements DevelopersDao {
         return developer;
     }
 
-    private void addSkillsToDeveloper(Developer developer,List<String> skills) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    private void addSkillsToDeveloper(Developer developer,List<String> skills) throws SQLException {
         int id = developer.getDeveloperId();
         for (String skill : skills) {
             for (Skill skill1 : skillsDao.getAll()) {
@@ -151,18 +157,26 @@ public class JdbcDevelopersDao implements DevelopersDao {
                                 + ", developer skill id: " + skill1.getSkillId());
                     } catch (SQLException e) {
                         LOGGER.error("Something wrong with add skill in developer_skill");
+                        throw e;
                     }
                 }
             }
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     private void updateSkillsFromDeveloper(Developer developer, List<String> skills){
-        deleteSkillsFromDeveloper(developer.getDeveloperId());
-        addSkillsToDeveloper(developer,skills);
+        try {
+            deleteSkillsFromDeveloper(developer.getDeveloperId());
+            addSkillsToDeveloper(developer,skills);
+            LOGGER.info("Skills of developer are updating");
+        } catch (SQLException e) {
+            LOGGER.error("Something wrong with updating skills from developer");
+        }
     }
 
-    private void deleteSkillsFromDeveloper(int developerId){
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    private void deleteSkillsFromDeveloper(int developerId) throws SQLException {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM developer_skill WHERE developer_id = ?")){
@@ -171,9 +185,11 @@ public class JdbcDevelopersDao implements DevelopersDao {
             LOGGER.error("From table Developer_skill was delete skills of developer id: " + developerId);
         }catch (SQLException e){
             LOGGER.error("Something wrong with deleting skill from developer");
+            throw e;
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     private void deleteDeveloperFromProject(int developerId){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -186,7 +202,7 @@ public class JdbcDevelopersDao implements DevelopersDao {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     private void findDeveloperSkills(Developer developer){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection

@@ -26,6 +26,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = SQLException.class)
     public void save(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -49,13 +50,14 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = SQLException.class)
     public void delete(int projectId) {
-        deleteDevelopersFromProject(projectId);
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM projects WHERE project_id = ?")){
 
             statement.setInt(1, projectId);
+            deleteDevelopersFromProject(projectId);
             statement.execute();
             LOGGER.info("From table Projects was deleting company with id = " + projectId);
         } catch(SQLException e){
@@ -64,6 +66,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = SQLException.class)
     public void update(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -83,6 +86,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public List<Project> getAll() {
         List<Project> projects = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -99,6 +103,7 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     public Project getById(int projectId) {
         Project project = new Project();
         try(Connection connection = dataSource.getConnection();
@@ -138,7 +143,8 @@ public class JdbcProjectsDao implements ProjectsDao {
         return project;
     }
 
-    private void addDevelopersToProject(Project project, List<Integer> developersId){
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    private void addDevelopersToProject(Project project, List<Integer> developersId) throws SQLException {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                 .prepareStatement("INSERT INTO developer_project VALUE (?, ?)")){
@@ -155,15 +161,23 @@ public class JdbcProjectsDao implements ProjectsDao {
             }
         }catch (SQLException e){
             LOGGER.error("Something going wrong when add developer to project");
+            throw e;
         }
     }
 
+    @Transactional (propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
     private void updateDeveloperInProjects(Project project, List<Integer> developersId){
-        deleteDevelopersFromProject(project.getProjectId());
-        addDevelopersToProject(project, developersId);
+        try {
+            deleteDevelopersFromProject(project.getProjectId());
+            addDevelopersToProject(project, developersId);
+            LOGGER.info("Developer in project are updating");
+        } catch (SQLException e) {
+            LOGGER.error("Something wrong with updating developer in project");
+        }
     }
 
-    private void deleteDevelopersFromProject(int projectId){
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    private void deleteDevelopersFromProject(int projectId) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection
                      .prepareStatement("DELETE FROM developer_project WHERE project_id = ?")) {
@@ -172,9 +186,11 @@ public class JdbcProjectsDao implements ProjectsDao {
             LOGGER.info("From table Developer_project was delete developers of project id: " + projectId);
         } catch (SQLException e) {
             LOGGER.error("Something wrong with deleting skill in developer_skill");
+            throw e;
         }
     }
 
+    @Transactional (propagation = Propagation.REQUIRED)
     private void findDevelopersInProject(Project project){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
