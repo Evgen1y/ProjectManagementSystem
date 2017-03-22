@@ -1,8 +1,5 @@
 package ua.goit.java.console.table;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.CompaniesDao;
 import ua.goit.java.entity.Company;
 

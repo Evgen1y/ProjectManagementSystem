@@ -1,8 +1,5 @@
 package ua.goit.java.console.table;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.entity.Skill;
 
@@ -15,7 +12,6 @@ import java.util.Scanner;
  */
 public class SkillsConsole extends TableConsole{
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private SkillsDao skillsDao;
 

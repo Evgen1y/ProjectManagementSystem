@@ -1,10 +1,5 @@
 package ua.goit.java.console.table;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.DevelopersDao;
 import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.entity.Developer;
@@ -16,13 +11,9 @@ import java.util.*;
  */
 public class DevelopersConsole extends TableConsole {
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private DevelopersDao developersDao;
     private SkillsDao skillsDao;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DevelopersConsole.class);
-
 
     @Override
     public void runConsole() {

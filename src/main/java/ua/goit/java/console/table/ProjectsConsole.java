@@ -1,8 +1,5 @@
 package ua.goit.java.console.table;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.CompaniesDao;
 import ua.goit.java.dao.CustomersDao;
 import ua.goit.java.dao.DevelopersDao;
@@ -16,7 +13,6 @@ import java.util.*;
  */
 public class ProjectsConsole extends TableConsole{
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private ProjectsDao projectsDao;
     private CompaniesDao companiesDao;
