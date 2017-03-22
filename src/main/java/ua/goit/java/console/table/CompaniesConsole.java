@@ -15,7 +15,6 @@ import java.util.Scanner;
  */
 public class CompaniesConsole extends TableConsole{
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private CompaniesDao companiesDao;
 
@@ -40,7 +39,6 @@ public class CompaniesConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void add(){
         Company company = new Company();
         System.out.print("Please insert company name: ");
@@ -49,14 +47,12 @@ public class CompaniesConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(){
         System.out.print("Please insert company id: ");
         companiesDao.delete(scanner.nextInt());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Please insert id of company that you want update: ");
         Company company = companiesDao.getById(scanner.nextInt());
@@ -67,7 +63,6 @@ public class CompaniesConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Company> companies;
         companies = companiesDao.getAll();
@@ -75,15 +70,11 @@ public class CompaniesConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Please insert id of company: ");
         System.out.println(companiesDao.getById(scanner.nextInt()));
     }
 
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
-    }
 
     public void setCompaniesDao(CompaniesDao companiesDao) {
         this.companiesDao = companiesDao;

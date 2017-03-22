@@ -46,7 +46,6 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void add(){
         Project project = new Project();
         System.out.print("Insert project name: ");
@@ -73,14 +72,12 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(){
         System.out.print("Insert project id: ");
         projectsDao.delete(scanner.nextInt());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of project that you want update: ");
         Project project = projectsDao.getById(scanner.nextInt());
@@ -97,7 +94,6 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Project> projects;
         projects = projectsDao.getAll();
@@ -105,14 +101,9 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of project: ");
         System.out.println(projectsDao.getById(scanner.nextInt()));
-    }
-
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
     }
 
     public void setProjectsDao(ProjectsDao projectsDao) {

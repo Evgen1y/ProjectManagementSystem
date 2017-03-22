@@ -54,7 +54,6 @@ public class SkillsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of skill that you want update: ");
         Skill skill = skillsDao.getById(scanner.nextInt());
@@ -65,7 +64,6 @@ public class SkillsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Skill> skills;
         skills = skillsDao.getAll();
@@ -73,14 +71,9 @@ public class SkillsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of skill: ");
         System.out.println(skillsDao.getById(scanner.nextInt()));
-    }
-
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
     }
 
     public void setSkillsDao(SkillsDao skillsDao) {

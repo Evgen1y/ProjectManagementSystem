@@ -22,7 +22,6 @@ public class JdbcCompaniesDao implements CompaniesDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void save(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -37,7 +36,6 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void delete(int companyId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -51,7 +49,6 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void update(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -66,7 +63,6 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Company> getAll() {
         List<Company> companies = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -84,7 +80,6 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Company getById(int companyId) {
         Company company = new Company();
         try(Connection connection = dataSource.getConnection();

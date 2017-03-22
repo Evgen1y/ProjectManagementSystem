@@ -27,7 +27,6 @@ public class JdbcDevelopersDao implements DevelopersDao {
     private DevelopersConsole developersConsole;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void save(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -52,7 +51,6 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(int developerId) {
         deleteSkillsFromDeveloper(developerId);
         deleteDeveloperFromProject(developerId);
@@ -68,7 +66,6 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(Developer developer, List<String> skills) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -87,7 +84,6 @@ public class JdbcDevelopersDao implements DevelopersDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public List<Developer> getAll() {
         List<Developer> developers = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -104,7 +100,6 @@ public class JdbcDevelopersDao implements DevelopersDao {
         return developers;    }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public Developer getById(int developerId) {
         Developer developer = new Developer();
 
@@ -140,7 +135,6 @@ public class JdbcDevelopersDao implements DevelopersDao {
         return developer;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void addSkillsToDeveloper(Developer developer,List<String> skills) {
         int id = developer.getDeveloperId();
         for (String skill : skills) {
@@ -163,13 +157,11 @@ public class JdbcDevelopersDao implements DevelopersDao {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void updateSkillsFromDeveloper(Developer developer, List<String> skills){
         deleteSkillsFromDeveloper(developer.getDeveloperId());
         addSkillsToDeveloper(developer,skills);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void deleteSkillsFromDeveloper(int developerId){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection

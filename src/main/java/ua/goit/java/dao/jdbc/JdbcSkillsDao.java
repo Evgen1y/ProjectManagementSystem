@@ -24,7 +24,6 @@ public class JdbcSkillsDao implements SkillsDao {
 
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void save(Skill skill) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -39,7 +38,6 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(int skillId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -53,7 +51,6 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(Skill skill) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -69,7 +66,6 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public List<Skill> getAll() {
         List<Skill> skills = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -86,7 +82,6 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public Skill getById(int skillId) {
         Skill skill = new Skill();
 

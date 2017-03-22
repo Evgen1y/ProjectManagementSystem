@@ -45,7 +45,6 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void add() {
         Developer developer = new Developer();
         System.out.print("Insert developer name: ");
@@ -63,14 +62,12 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete() {
         System.out.print("Insert developer id: ");
         developersDao.delete(scanner.nextInt());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update() {
         System.out.print("Insert id of developer that you want update: ");
         Developer developer = developersDao.getById(scanner.nextInt());
@@ -90,7 +87,6 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll() {
         List<Developer> customers;
         customers = developersDao.getAll();
@@ -98,14 +94,9 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById() {
         System.out.println("Insert id of company: ");
         System.out.println(developersDao.getById(scanner.nextInt()));
-    }
-
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
     }
 
     public void setDevelopersDao(DevelopersDao developersDao) {

@@ -26,7 +26,6 @@ public class JdbcProjectsDao implements ProjectsDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void save(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -50,7 +49,6 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(int projectId) {
         deleteDevelopersFromProject(projectId);
         try(Connection connection = dataSource.getConnection();
@@ -66,7 +64,6 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(Project project, List<Integer> developersId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -86,7 +83,6 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public List<Project> getAll() {
         List<Project> projects = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
@@ -103,7 +99,6 @@ public class JdbcProjectsDao implements ProjectsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public Project getById(int projectId) {
         Project project = new Project();
         try(Connection connection = dataSource.getConnection();
@@ -143,7 +138,6 @@ public class JdbcProjectsDao implements ProjectsDao {
         return project;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void addDevelopersToProject(Project project, List<Integer> developersId){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -164,13 +158,11 @@ public class JdbcProjectsDao implements ProjectsDao {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void updateDeveloperInProjects(Project project, List<Integer> developersId){
         deleteDevelopersFromProject(project.getProjectId());
         addDevelopersToProject(project, developersId);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void deleteDevelopersFromProject(int projectId){
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection
@@ -183,7 +175,6 @@ public class JdbcProjectsDao implements ProjectsDao {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     private void findDevelopersInProject(Project project){
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection

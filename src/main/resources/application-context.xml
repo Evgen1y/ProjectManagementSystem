@@ -20,7 +20,6 @@
     </bean>
 
     <bean id="console" class="ua.goit.java.console.Console">
-        <property name="txManager" ref="txManager"/>
         <property name="companiesConsole" ref="companiesConsole"/>
         <property name="customersConsole" ref="customersConsole"/>
         <property name="developersConsole" ref="developersConsole"/>
@@ -58,27 +57,22 @@
 
     <bean id="companiesConsole" class="ua.goit.java.console.table.CompaniesConsole" parent="tableConsole">
         <property name="companiesDao" ref="companiesDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="customersConsole" class="ua.goit.java.console.table.CustomersConsole" parent="tableConsole">
         <property name="customersDao" ref="customersDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="developersConsole" class= "ua.goit.java.console.table.DevelopersConsole" parent="tableConsole">
         <property name="developersDao" ref="developersDao"/>
         <property name="skillsDao" ref="skillsDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="projectsConsole" class="ua.goit.java.console.table.ProjectsConsole" parent="tableConsole">
         <property name="companiesDao" ref="companiesDao"/>
         <property name="customersDao" ref="customersDao"/>
         <property name="developersDao" ref="developersDao"/>
         <property name="projectsDao" ref="projectsDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="skillsConsole" class="ua.goit.java.console.table.SkillsConsole" parent="tableConsole">
         <property name="skillsDao" ref="skillsDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
