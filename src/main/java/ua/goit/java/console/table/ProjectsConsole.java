@@ -82,9 +82,9 @@ public class ProjectsConsole extends TableConsole{
         project.setProjectName(scanner.next());
         System.out.print("Insert new cost: ");
         project.setCost(scanner.nextInt());
-        System.out.println("Insert new company id: ");
+        System.out.print("Insert new company id: ");
         project.setCompanyId(scanner.nextInt());
-        System.out.println("Insert new customer id: ");
+        System.out.print("Insert new customer id: ");
         project.setCustomerId(scanner.nextInt());
         System.out.println("Insert developer id that work in this project: ");
         System.out.println("You can chose from this developers: ");
