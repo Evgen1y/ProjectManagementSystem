@@ -1,18 +1,45 @@
 package ua.goit.java.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by bulov on 03.03.2017.
  */
+
+@Entity
+@Table(name = "developers")
 public class Developer {
 
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @Column(name = "developer_id")
     private int developerId;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "surname")
     private String surname;
+
+    @Column(name = "salary")
     private int salary;
-    private List<Skill> skills = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "developer_skill",
+            joinColumns = @JoinColumn(name = "developer_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private List<Skill> skills;
+
+    public Developer() {
+        skills = new ArrayList<>();
+    }
 
     public void addSkill(Skill skill){
         skills.add(skill);

@@ -1,11 +1,24 @@
 package ua.goit.java.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+
 /**
  * Created by bulov on 03.03.2017.
  */
+
+@Entity
+@Table(name = "customers")
 public class Customer {
 
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @Column(name = "customer_id")
     private int customerId;
+
+    @Column(name = "customer_name")
     private String customerName;
 
     public int getCustomerId() {

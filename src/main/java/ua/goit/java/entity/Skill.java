@@ -1,11 +1,24 @@
 package ua.goit.java.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+
 /**
  * Created by bulov on 03.03.2017.
  */
+
+@Entity
+@Table(name = "skills")
 public class Skill {
 
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @Column(name = "skill_id")
     private int skillId;
+
+    @Column(name = "skill_name")
     private String skillName;
 
     public int getSkillId() {

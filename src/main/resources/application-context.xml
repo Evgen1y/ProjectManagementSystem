@@ -28,7 +28,7 @@
     </bean>
 
 
-    <bean id="companiesDao" class="ua.goit.java.dao.jdbc.JdbcCompaniesDao">
+   <!-- <bean id="companiesDao" class="ua.goit.java.dao.jdbc.JdbcCompaniesDao">
         <property name="dataSource" ref="dataSource"/>
         <property name="companiesConsole" ref="companiesConsole"/>
     </bean>
@@ -49,6 +49,24 @@
     <bean id="skillsDao" class="ua.goit.java.dao.jdbc.JdbcSkillsDao">
         <property name="dataSource" ref="dataSource"/>
         <property name="skillsConsole" ref="skillsConsole"/>
+    </bean>-->
+
+    <bean id="companiesDao" class="ua.goit.java.dao.hibernate.HibernateCompaniesDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="customersDao" class="ua.goit.java.dao.hibernate.HibernateCustomersDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="developersDao" class="ua.goit.java.dao.hibernate.HibernateDevelopersDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="skillsDao" ref="skillsDao"/>
+    </bean>
+    <bean id="projectsDao" class="ua.goit.java.dao.hibernate.HibernateProjectsDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="developersDao" ref="developersDao"/>
+    </bean>
+    <bean id="skillsDao" class="ua.goit.java.dao.hibernate.HibernateSkillsDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
     <bean id="tableConsole" class="ua.goit.java.console.table.TableConsole" abstract="true">
