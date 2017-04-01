@@ -20,7 +20,6 @@
     </bean>
 
     <bean id="console" class="ua.goit.java.console.Console">
-        <property name="txManager" ref="txManager"/>
         <property name="companiesConsole" ref="companiesConsole"/>
         <property name="customersConsole" ref="customersConsole"/>
         <property name="developersConsole" ref="developersConsole"/>
@@ -29,7 +28,7 @@
     </bean>
 
 
-    <bean id="companiesDao" class="ua.goit.java.dao.jdbc.JdbcCompaniesDao">
+   <!-- <bean id="companiesDao" class="ua.goit.java.dao.jdbc.JdbcCompaniesDao">
         <property name="dataSource" ref="dataSource"/>
         <property name="companiesConsole" ref="companiesConsole"/>
     </bean>
@@ -50,6 +49,24 @@
     <bean id="skillsDao" class="ua.goit.java.dao.jdbc.JdbcSkillsDao">
         <property name="dataSource" ref="dataSource"/>
         <property name="skillsConsole" ref="skillsConsole"/>
+    </bean>-->
+
+    <bean id="companiesDao" class="ua.goit.java.dao.hibernate.HibernateCompaniesDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="customersDao" class="ua.goit.java.dao.hibernate.HibernateCustomersDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="developersDao" class="ua.goit.java.dao.hibernate.HibernateDevelopersDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="skillsDao" ref="skillsDao"/>
+    </bean>
+    <bean id="projectsDao" class="ua.goit.java.dao.hibernate.HibernateProjectsDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+        <property name="developersDao" ref="developersDao"/>
+    </bean>
+    <bean id="skillsDao" class="ua.goit.java.dao.hibernate.HibernateSkillsDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
     <bean id="tableConsole" class="ua.goit.java.console.table.TableConsole" abstract="true">
@@ -58,27 +75,22 @@
 
     <bean id="companiesConsole" class="ua.goit.java.console.table.CompaniesConsole" parent="tableConsole">
         <property name="companiesDao" ref="companiesDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="customersConsole" class="ua.goit.java.console.table.CustomersConsole" parent="tableConsole">
         <property name="customersDao" ref="customersDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="developersConsole" class= "ua.goit.java.console.table.DevelopersConsole" parent="tableConsole">
         <property name="developersDao" ref="developersDao"/>
         <property name="skillsDao" ref="skillsDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="projectsConsole" class="ua.goit.java.console.table.ProjectsConsole" parent="tableConsole">
         <property name="companiesDao" ref="companiesDao"/>
         <property name="customersDao" ref="customersDao"/>
         <property name="developersDao" ref="developersDao"/>
         <property name="projectsDao" ref="projectsDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
     <bean id="skillsConsole" class="ua.goit.java.console.table.SkillsConsole" parent="tableConsole">
         <property name="skillsDao" ref="skillsDao"/>
-        <property name="txManager" ref="txManager"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

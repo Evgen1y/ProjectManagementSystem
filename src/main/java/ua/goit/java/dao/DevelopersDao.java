@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface DevelopersDao {
 
-    void addDeveloper (Developer developer, List<String> skills);
+    void save(Developer developer, List<String> skills);
 
-    void deleteDeveloper (int developerId);
+    void delete(int developerId);
 
-    void updateDeveloper (Developer developer, List<String> skills);
+    void update(Developer developer, List<String> skills);
 
-    List<Developer> getAllDevelopers();
+    List<Developer> getAll();
 
-    Developer getDeveloperById (int developerId);
+    Developer getById(int developerId);
 }

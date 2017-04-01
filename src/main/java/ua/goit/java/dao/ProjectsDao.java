@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface ProjectsDao {
 
-    void addProject (Project project, List<Integer> developersId);
+    void save(Project project, List<Integer> developersId);
 
-    void deleteProject (int projectId);
+    void delete(int projectId);
 
-    void updateProject (Project project, List<Integer> developersId);
+    void update(Project project, List<Integer> developersId);
 
-    List<Project> getAllProjects();
+    List<Project> getAll();
 
-    Project getProjectById (int projectId);
+    Project getById(int projectId);
 }

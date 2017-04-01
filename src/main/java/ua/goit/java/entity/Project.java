@@ -1,19 +1,48 @@
 package ua.goit.java.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by bulov on 03.03.2017.
  */
+
+@Entity
+@Table(name = "projects")
 public class Project {
 
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @Column(name = "project_id")
     private int projectId;
+
+    @Column(name = "project_name")
     private String projectName;
+
+    @Column(name = "company_id")
     private int companyId;
+
+    @Column(name = "customer_id")
     private int customerId;
+
+    @Column(name = "cost")
     private int cost;
-    private List<Developer> developers = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "developer_project",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "developer_id")
+    )
+    private List<Developer> developers;
+
+    public Project() {
+        developers = new ArrayList<>();
+    }
 
     public void addDeveloper(Developer developer){
         developers.add(developer);

@@ -1,10 +1,6 @@
 package ua.goit.java.console.table;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.SkillsDao;
-import ua.goit.java.dao.jdbc.JdbcSkillsDao;
 import ua.goit.java.entity.Skill;
 
 import java.util.InputMismatchException;
@@ -16,7 +12,6 @@ import java.util.Scanner;
  */
 public class SkillsConsole extends TableConsole{
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private SkillsDao skillsDao;
 
@@ -45,43 +40,36 @@ public class SkillsConsole extends TableConsole{
         Skill skill = new Skill();
         System.out.print("Insert skill name: ");
         skill.setSkillName(scanner.next());
-        skillsDao.addSkill(skill);
+        skillsDao.save(skill);
     }
 
     @Override
     public void delete(){
         System.out.print("Insert skill id: ");
-        skillsDao.deleteSkill(scanner.nextInt());
+        skillsDao.delete(scanner.nextInt());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of skill that you want update: ");
-        Skill skill = skillsDao.getSkillById(scanner.nextInt());
+        Skill skill = skillsDao.getById(scanner.nextInt());
         System.out.println("You chose: " + skill.toString());
         System.out.print("Insert new name for skill: ");
         skill.setSkillName(scanner.next());
-        skillsDao.updateSkill(skill);
+        skillsDao.update(skill);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Skill> skills;
-        skills = skillsDao.getAllSkills();
+        skills = skillsDao.getAll();
         skills.forEach(System.out::println);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of skill: ");
-        System.out.println(skillsDao.getSkillById(scanner.nextInt()));
-    }
-
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
+        System.out.println(skillsDao.getById(scanner.nextInt()));
     }
 
     public void setSkillsDao(SkillsDao skillsDao) {

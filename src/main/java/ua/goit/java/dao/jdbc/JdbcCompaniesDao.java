@@ -22,23 +22,23 @@ public class JdbcCompaniesDao implements CompaniesDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcCompaniesDao.class);
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void addCompany(Company company) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public void save(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO companies VALUES (?, ?)")){
             statement.setInt(1, company.getCompanyId());
             statement.setString(2, company.getCompanyName());
             statement.execute();
-            LOGGER.info("In table Companies was added " + company);
+            LOGGER.info("In table Companies was saved " + company);
         } catch(SQLException e){
-            LOGGER.error("Something wrong with add company in companies");
+            LOGGER.error("Something wrong with saving company in companies");
         }
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void deleteCompany(int companyId) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public void delete(int companyId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("DELETE FROM companies WHERE company_id = ?")){
@@ -51,8 +51,8 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateCompany(Company company) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public void update(Company company) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE companies SET company_name = ? WHERE company_id = ?")){
@@ -66,8 +66,8 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<Company> getAllCompanies() {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public List<Company> getAll() {
         List<Company> companies = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
             Statement statement = connection
@@ -84,8 +84,8 @@ public class JdbcCompaniesDao implements CompaniesDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Company getCompanyById(int companyId) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public Company getById(int companyId) {
         Company company = new Company();
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
@@ -94,8 +94,7 @@ public class JdbcCompaniesDao implements CompaniesDao {
             statement.setInt(1, companyId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
-                company.setCompanyName(resultSet.getString("company_name"));
-                company.setCompanyId(resultSet.getInt("company_id"));
+                company = createCompany(resultSet);
                 LOGGER.info("Company with id = " + companyId + " is received");
             }
         } catch(SQLException e){

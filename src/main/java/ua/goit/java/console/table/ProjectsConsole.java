@@ -1,8 +1,5 @@
 package ua.goit.java.console.table;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.CompaniesDao;
 import ua.goit.java.dao.CustomersDao;
 import ua.goit.java.dao.DevelopersDao;
@@ -16,7 +13,6 @@ import java.util.*;
  */
 public class ProjectsConsole extends TableConsole{
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private ProjectsDao projectsDao;
     private CompaniesDao companiesDao;
@@ -46,7 +42,6 @@ public class ProjectsConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void add(){
         Project project = new Project();
         System.out.print("Insert project name: ");
@@ -55,64 +50,62 @@ public class ProjectsConsole extends TableConsole{
         project.setCost(scanner.nextInt());
         System.out.println("Insert company id that will work on this project: ");
         System.out.println("You can chose from this company: ");
-        companiesDao.getAllCompanies().forEach(System.out::println);
+        companiesDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         project.setCompanyId(scanner.nextInt());
         System.out.print("Insert customer id of this project: ");
         System.out.println("You can chose from this customers: ");
-        customersDao.getAllCustomers().forEach(System.out::println);
+        customersDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         project.setCustomerId(scanner.nextInt());
         System.out.println("Insert developer id that work in this project: ");
         System.out.println("You can chose from this developers: ");
-        developersDao.getAllDevelopers().forEach(System.out::println);
+        developersDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         List<Integer> developersId = new ArrayList<>();
         Arrays.stream(scanner.next().split("/")).mapToInt(Integer::parseInt).forEach(developersId::add);
-        projectsDao.addProject(project, developersId);
+        projectsDao.save(project, developersId);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(){
         System.out.print("Insert project id: ");
-        projectsDao.deleteProject(scanner.nextInt());
+        projectsDao.delete(scanner.nextInt());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Insert id of project that you want update: ");
-        Project project = projectsDao.getProjectById(scanner.nextInt());
+        Project project = projectsDao.getById(scanner.nextInt());
         System.out.println("You chose: " + project.toString());
         System.out.print("Insert new name for project: ");
         project.setProjectName(scanner.next());
+        System.out.print("Insert new cost: ");
+        project.setCost(scanner.nextInt());
+        System.out.print("Insert new company id: ");
+        project.setCompanyId(scanner.nextInt());
+        System.out.print("Insert new customer id: ");
+        project.setCustomerId(scanner.nextInt());
         System.out.println("Insert developer id that work in this project: ");
         System.out.println("You can chose from this developers: ");
-        developersDao.getAllDevelopers().forEach(System.out::println);
+        developersDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         List<Integer> developersId = new ArrayList<>();
         Arrays.stream(scanner.next().split("/")).mapToInt(Integer::parseInt).forEach(developersId::add);
-        projectsDao.updateProject(project, developersId);
+        projectsDao.update(project, developersId);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Project> projects;
-        projects = projectsDao.getAllProjects();
+        projects = projectsDao.getAll();
         projects.forEach(System.out::println);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Insert id of project: ");
-        System.out.println(projectsDao.getProjectById(scanner.nextInt()));
-    }
-
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
+        System.out.println(projectsDao.getById(scanner.nextInt()));
     }
 
     public void setProjectsDao(ProjectsDao projectsDao) {

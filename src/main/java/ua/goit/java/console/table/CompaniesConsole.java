@@ -1,10 +1,7 @@
 package ua.goit.java.console.table;
 
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.CompaniesDao;
-import ua.goit.java.dao.jdbc.JdbcCompaniesDao;
 import ua.goit.java.entity.Company;
 
 import java.util.InputMismatchException;
@@ -16,7 +13,6 @@ import java.util.Scanner;
  */
 public class CompaniesConsole extends TableConsole{
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private CompaniesDao companiesDao;
 
@@ -41,50 +37,42 @@ public class CompaniesConsole extends TableConsole{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void add(){
         Company company = new Company();
         System.out.print("Please insert company name: ");
         company.setCompanyName(scanner.next());
-        companiesDao.addCompany(company);
+        companiesDao.save(company);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(){
         System.out.print("Please insert company id: ");
-        companiesDao.deleteCompany(scanner.nextInt());
+        companiesDao.delete(scanner.nextInt());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update(){
         System.out.print("Please insert id of company that you want update: ");
-        Company company = companiesDao.getCompanyById(scanner.nextInt());
+        Company company = companiesDao.getById(scanner.nextInt());
         System.out.println("You chose: " + company.toString());
         System.out.print("Please insert new name for company: ");
         company.setCompanyName(scanner.next());
-        companiesDao.updateCompany(company);
+        companiesDao.update(company);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll(){
         List<Company> companies;
-        companies = companiesDao.getAllCompanies();
+        companies = companiesDao.getAll();
         companies.forEach(System.out::println);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById(){
         System.out.print("Please insert id of company: ");
-        System.out.println(companiesDao.getCompanyById(scanner.nextInt()));
+        System.out.println(companiesDao.getById(scanner.nextInt()));
     }
 
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
-    }
 
     public void setCompaniesDao(CompaniesDao companiesDao) {
         this.companiesDao = companiesDao;

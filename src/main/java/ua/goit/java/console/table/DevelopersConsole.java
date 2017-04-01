@@ -1,10 +1,5 @@
 package ua.goit.java.console.table;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ua.goit.java.dao.DevelopersDao;
 import ua.goit.java.dao.SkillsDao;
 import ua.goit.java.entity.Developer;
@@ -16,13 +11,9 @@ import java.util.*;
  */
 public class DevelopersConsole extends TableConsole {
 
-    private PlatformTransactionManager txManager;
     private Scanner scanner = new Scanner(System.in);
     private DevelopersDao developersDao;
     private SkillsDao skillsDao;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DevelopersConsole.class);
-
 
     @Override
     public void runConsole() {
@@ -45,7 +36,6 @@ public class DevelopersConsole extends TableConsole {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void add() {
         Developer developer = new Developer();
         System.out.print("Insert developer name: ");
@@ -56,24 +46,22 @@ public class DevelopersConsole extends TableConsole {
         developer.setSalary(scanner.nextInt());
         System.out.println("Insert developer skills (PLEASE USE / TO SEPARATE): ");
         System.out.println("You can chose from this skills:");
-        skillsDao.getAllSkills().forEach(System.out::println);
+        skillsDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         List<String> skills = (Arrays.asList(scanner.next().split("/")));
-        developersDao.addDeveloper(developer, skills);
+        developersDao.save(developer, skills);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete() {
         System.out.print("Insert developer id: ");
-        developersDao.deleteDeveloper(scanner.nextInt());
+        developersDao.delete(scanner.nextInt());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void update() {
         System.out.print("Insert id of developer that you want update: ");
-        Developer developer = developersDao.getDeveloperById(scanner.nextInt());
+        Developer developer = developersDao.getById(scanner.nextInt());
         System.out.println("You chose: " + developer.toString());
         System.out.print("Insert new name for developer: ");
         developer.setName(scanner.next());
@@ -83,29 +71,23 @@ public class DevelopersConsole extends TableConsole {
         developer.setSalary(scanner.nextInt());
         System.out.println("Insert developer skills (PLEASE USE / TO SEPARATE): ");
         System.out.println("You can chose from this skills:");
-        skillsDao.getAllSkills().forEach(System.out::println);
+        skillsDao.getAll().forEach(System.out::println);
         System.out.print("Your choice > ");
         List<String> skills = (Arrays.asList(scanner.next().split("/")));
-        developersDao.updateDeveloper(developer, skills);
+        developersDao.update(developer, skills);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getAll() {
         List<Developer> customers;
-        customers = developersDao.getAllDevelopers();
+        customers = developersDao.getAll();
         customers.forEach(System.out::println);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void getById() {
         System.out.println("Insert id of company: ");
-        System.out.println(developersDao.getDeveloperById(scanner.nextInt()));
-    }
-
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
+        System.out.println(developersDao.getById(scanner.nextInt()));
     }
 
     public void setDevelopersDao(DevelopersDao developersDao) {

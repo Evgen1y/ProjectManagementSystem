@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface CompaniesDao {
 
-    void addCompany (Company company);
+    void save(Company company);
 
-    void deleteCompany (int companyId);
+    void delete(int companyId);
 
-    void updateCompany (Company company);
+    void update(Company company);
 
-    List<Company> getAllCompanies();
+    List<Company> getAll();
 
-    Company getCompanyById (int companyId);
+    Company getById(int companyId);
 }

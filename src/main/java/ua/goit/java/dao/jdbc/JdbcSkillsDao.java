@@ -24,23 +24,23 @@ public class JdbcSkillsDao implements SkillsDao {
 
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void addSkill(Skill skill) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public void save(Skill skill) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("INSERT INTO skills VALUES (?, ?)")){
             statement.setInt(1, skill.getSkillId());
             statement.setString(2, skill.getSkillName());
             statement.execute();
-            LOGGER.info("In table Skills was added " + skill);
+            LOGGER.info("In table Skills was saved " + skill);
         } catch(SQLException e){
-            LOGGER.error("Something wrong with add skill in skills");
+            LOGGER.error("Something wrong with saving skill in skills");
         }
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteSkill(int skillId) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public void delete(int skillId) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                 .prepareStatement("DELETE FROM skills WHERE skill_id = ?")){
@@ -53,8 +53,8 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void updateSkill(Skill skill) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public void update(Skill skill) {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement statement = connection
                     .prepareStatement("UPDATE skills SET skill_name = ? WHERE skill_id = ?")){
@@ -69,8 +69,8 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public List<Skill> getAllSkills() {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public List<Skill> getAll() {
         List<Skill> skills = new ArrayList<>();
         try(Connection connection = dataSource.getConnection();
             Statement statement = connection.createStatement()){
@@ -86,8 +86,8 @@ public class JdbcSkillsDao implements SkillsDao {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public Skill getSkillById(int skillId) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = SQLException.class)
+    public Skill getById(int skillId) {
         Skill skill = new Skill();
 
         try(Connection connection = dataSource.getConnection();
@@ -97,8 +97,7 @@ public class JdbcSkillsDao implements SkillsDao {
             statement.setInt(1, skillId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
-                skill.setSkillName(resultSet.getString("skill_name"));
-                skill.setSkillId(resultSet.getInt("skill_id"));
+                skill = createSkill(resultSet);
                 LOGGER.info("Skill with id = " + skillId + " is received");
             }
         } catch(SQLException e){
